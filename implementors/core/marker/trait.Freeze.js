@@ -1,0 +1,3 @@
+(function() {var implementors = {};
+implementors["bheap"] = [{"text":"impl&lt;T&gt; <a class=\"trait\" href=\"https://doc.rust-lang.org/1.55.0/core/marker/trait.Freeze.html\" title=\"trait core::marker::Freeze\">Freeze</a> for <a class=\"struct\" href=\"bheap/struct.BinaryMaxHeap.html\" title=\"struct bheap::BinaryMaxHeap\">BinaryMaxHeap</a>&lt;T&gt;","synthetic":true,"types":["bheap::BinaryMaxHeap"]}];
+if (window.register_implementors) {window.register_implementors(implementors);} else {window.pending_implementors = implementors;}})()
