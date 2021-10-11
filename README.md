@@ -34,5 +34,4 @@ Another interesting property of this library is that it has no third party depen
 
 `bheap` is licensed under the MIT License. See [LICENSE](./LICENSE) for the full license text.
 
-
 [![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Farindas%2Fbheap.svg?type=large)](https://app.fossa.com/projects/git%2Bgithub.com%2Farindas%2Fbheap?ref=badge_large)
