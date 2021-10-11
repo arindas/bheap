@@ -1,37 +1,41 @@
-use std::{
-    cmp::Ordering,
-    cmp::Ordering::Less,
-    collections::{hash_map::DefaultHasher, HashMap},
-    hash::{Hash, Hasher},
-};
+use std::{cmp::Ordering, collections::HashMap};
+
+pub trait Uid {
+    fn uid(&self) -> u64;
+}
 
 pub struct BinaryMaxHeap<T>
 where
-    T: Eq + PartialEq + Hash + Ord,
+    T: Ord + Uid,
 {
     buffer: Vec<T>,
     index: HashMap<u64, usize>,
 }
 
-fn default_hash<T: Hash>(val: &T) -> u64 {
-    let mut hasher = DefaultHasher::new();
-    val.hash(&mut hasher);
-    hasher.finish()
-}
-
 impl<T> BinaryMaxHeap<T>
 where
-    T: Eq + PartialEq + Hash + Ord,
+    T: Ord + Uid,
 {
-    pub fn from_vec(vec: Vec<T>) -> Self {
-        BinaryMaxHeap {
-            buffer: vec,
+    pub fn from_vec(buffer: Vec<T>) -> Self {
+        let mut bheap = BinaryMaxHeap {
+            buffer,
             index: HashMap::new(),
+        };
+
+        if !bheap.is_empty() {
+            bheap.build_heap();
         }
+
+        bheap
     }
 
     pub fn new() -> Self {
         BinaryMaxHeap::from_vec(vec![])
+    }
+
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        self.buffer.is_empty()
     }
 
     #[inline]
@@ -43,8 +47,8 @@ where
     fn swap_elems_at_indices(&mut self, i: usize, j: usize) {
         let index = &mut self.index;
 
-        index.insert(default_hash(&self.buffer[i]), j);
-        index.insert(default_hash(&self.buffer[j]), i);
+        index.insert(self.buffer[i].uid(), j);
+        index.insert(self.buffer[j].uid(), i);
 
         self.buffer.swap(i, j);
     }
@@ -54,7 +58,7 @@ where
         self.buffer[i].cmp(&self.buffer[j])
     }
 
-    fn heapify_up(&mut self, idx: usize) {
+    fn heapify_up(&mut self, idx: usize) -> Option<usize> {
         let mut i = idx;
 
         while i > 0 {
@@ -62,14 +66,20 @@ where
 
             if let Ordering::Greater = self.cmp(i, parent) {
                 self.swap_elems_at_indices(i, parent);
-                i /= 2;
+                i = parent;
             } else {
                 break;
             };
         }
+
+        if i != idx {
+            return Some(i);
+        } else {
+            return None;
+        }
     }
 
-    fn heapify_down(&mut self, idx: usize) {
+    fn heapify_dn(&mut self, idx: usize) -> Option<usize> {
         let mut i = idx;
 
         while i < (self.len() / 2) {
@@ -77,13 +87,13 @@ where
             let (lc, rc) = (2 * i + 1, 2 * i + 2);
 
             if lc < self.len() {
-                if let Less = self.cmp(max, lc) {
+                if let Ordering::Less = self.cmp(max, lc) {
                     max = lc;
                 }
             }
 
             if rc < self.len() {
-                if let Less = self.cmp(max, rc) {
+                if let Ordering::Less = self.cmp(max, rc) {
                     max = rc;
                 }
             }
@@ -95,11 +105,21 @@ where
                 break;
             }
         }
+
+        if i != idx {
+            return Some(i);
+        } else {
+            return None;
+        }
     }
 
     #[inline]
-    fn update_index(&mut self, i: usize) {
-        self.index.insert(default_hash(&self.buffer[i]), i);
+    fn update_index(&mut self, i: usize) -> Option<usize> {
+        if i >= self.len() {
+            return None;
+        }
+
+        self.index.insert(self.buffer[i].uid(), i)
     }
 
     pub fn push(&mut self, elem: T) {
@@ -111,8 +131,8 @@ where
         self.heapify_up(idx);
     }
 
-    pub fn peek(&mut self) -> Option<&T> {
-        if self.buffer.is_empty() {
+    pub fn peek(&self) -> Option<&T> {
+        if self.is_empty() {
             return None;
         }
 
@@ -120,46 +140,176 @@ where
     }
 
     pub fn pop(&mut self) -> Option<T> {
-        if self.buffer.is_empty() {
+        if self.is_empty() {
             return None;
         }
 
         let elem = self.buffer.swap_remove(0);
-        self.index.remove(&default_hash(&elem));
-        self.heapify_down(0);
+        self.index.remove(&elem.uid());
+
+        self.update_index(0).and(self.heapify_dn(0));
 
         Some(elem)
     }
 
     pub fn build_index(&mut self) {
-        (0..self.len()).for_each(|i| self.update_index(i));
+        for i in 0..self.len() {
+            self.update_index(i);
+        }
     }
 
     pub fn build_heap(&mut self) {
         self.build_index();
 
         for i in (0..(self.len() / 2)).rev() {
-            self.heapify_down(i);
+            self.heapify_dn(i);
         }
     }
 
-    pub fn reprioritize_element(&mut self, elem: &T) -> Option<()> {
-        let i = *self.index.get(&default_hash(elem))?;
-
-        if let Ordering::Greater = self.cmp(i, (i - 1) / 2) {
-            self.heapify_up(i)
-        } else {
-            self.heapify_down(i)
+    pub fn restore_heap_property(&mut self, idx: usize) -> Option<usize> {
+        if idx >= self.len() {
+            return None;
         }
 
-        Some(())
+        self.heapify_up(idx).or(self.heapify_dn(idx))
+    }
+
+    pub fn index_in_heap_from_uid(&self, uid: u64) -> Option<usize> {
+        self.index.get(&uid).map(|&elem_idx| elem_idx)
+    }
+
+    pub fn index_in_heap(&self, elem: &T) -> Option<usize> {
+        self.index.get(&elem.uid()).map(|&elem_idx| elem_idx)
+    }
+}
+
+impl<T> BinaryMaxHeap<T>
+where
+    T: Ord + Uid,
+{
+    pub(crate) fn _index_consistent(&self) -> bool {
+        let mut result = true;
+        let mut i = 0;
+
+        for elem in &self.buffer {
+            let elem_consistent = self
+                .index_in_heap(elem)
+                .map_or(false, |elem_idx| elem_idx == i);
+
+            result = result && elem_consistent;
+            i += 1
+        }
+
+        result
     }
 }
 
 #[cfg(test)]
 mod tests {
+    use crate::{BinaryMaxHeap, Uid};
+
+    impl Uid for u32 {
+        fn uid(&self) -> u64 {
+            (*self).into()
+        }
+    }
+
     #[test]
-    fn it_works() {
-        assert_eq!(2 + 2, 4);
+    fn empty_binary_max_heap() {
+        let mut heap = BinaryMaxHeap::<u32>::new();
+
+        assert_eq!(heap.is_empty(), true);
+        assert_eq!(heap.len(), 0);
+        assert_eq!(heap.peek(), None);
+        assert_eq!(heap.pop(), None);
+
+        let mut heap = BinaryMaxHeap::from_vec(Vec::<u32>::with_capacity(10));
+
+        assert_eq!(heap.is_empty(), true);
+        assert_eq!(heap.len(), 0);
+        assert_eq!(heap.peek(), None);
+        assert_eq!(heap.pop(), None);
+    }
+
+    #[test]
+    fn binary_max_heap_from_vec_with_elems() {
+        let mut heap = BinaryMaxHeap::from_vec(vec![1, 7, 2, 5, 10, 9]);
+        assert_eq!(heap.peek(), Some(&10));
+        assert_eq!(heap.pop(), Some(10));
+
+        assert_eq!(heap.peek(), Some(&9));
+        assert_eq!(heap.pop(), Some(9));
+
+        assert_eq!(heap.peek(), Some(&7));
+        assert_eq!(heap.pop(), Some(7));
+
+        assert_eq!(heap.peek(), Some(&5));
+        assert_eq!(heap.pop(), Some(5));
+
+        assert_eq!(heap.peek(), Some(&2));
+        assert_eq!(heap.pop(), Some(2));
+
+        assert_eq!(heap.peek(), Some(&1));
+        assert_eq!(heap.pop(), Some(1));
+
+        assert_eq!(heap.peek(), None);
+        assert_eq!(heap.pop(), None);
+    }
+
+    #[test]
+    fn push_peek_pop_index_correctness() {
+        let mut heap = BinaryMaxHeap::<u32>::new();
+
+        heap.push(1);
+        assert_eq!(heap.peek(), Some(&1));
+        assert!(heap._index_consistent());
+
+        heap.push(7);
+        assert_eq!(heap.peek(), Some(&7));
+        assert!(heap._index_consistent());
+
+        heap.push(2);
+        assert_eq!(heap.peek(), Some(&7));
+        assert!(heap._index_consistent());
+
+        heap.push(5);
+        assert_eq!(heap.peek(), Some(&7));
+        assert!(heap._index_consistent());
+
+        heap.push(10);
+        assert_eq!(heap.peek(), Some(&10));
+        assert!(heap._index_consistent());
+
+        heap.push(9);
+        assert_eq!(heap.peek(), Some(&10));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), Some(&10));
+        assert_eq!(heap.pop(), Some(10));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), Some(&9));
+        assert_eq!(heap.pop(), Some(9));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), Some(&7));
+        assert_eq!(heap.pop(), Some(7));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), Some(&5));
+        assert_eq!(heap.pop(), Some(5));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), Some(&2));
+        assert_eq!(heap.pop(), Some(2));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), Some(&1));
+        assert_eq!(heap.pop(), Some(1));
+        assert!(heap._index_consistent());
+
+        assert_eq!(heap.peek(), None);
+        assert_eq!(heap.pop(), None);
+        assert!(heap._index_consistent());
     }
 }
