@@ -12,7 +12,7 @@ assumes that the ordering of the elements in the domain is fixed. I needed a bin
 for change in ordering of elements at runtime.
 
 ## How does it work?
-`bheap::BinaryMaxHeap` enforces the `Ord + Uid` trait bounds on the element type. The `Uid` trait, simply
+`bheap::BinaryMaxHeap` enforces the `Ord + bheap::Uid` trait bounds on the element type. The `Uid` trait, simply
 presents a method for returing a unique `u64` uid for the type.
 
 The struct maintains a `Vec<T>` as the underlying storage buffer and a `HashMap<u64, usize>` for maintaining a
@@ -20,3 +20,9 @@ mapping from `T::uid()` to position in vector. This map is updated on every heap
 
 When the ordering of an element changes, its position in the heap can be looked up in the heap using the
 hashmap. Then, we `heapify_up()` or `heapify_down()` as required to restore heap property.
+
+## Limitations
+Since, we use `u64` for uniquely identitfying elements, this heap can only scale up `2^64 = 18446744073709551616` elements.
+This was more than enough for my purposes.
+
+Another interesting property of this library is that it has no third party dependencies other than the standard libary.
