@@ -313,7 +313,65 @@
 <span id="313">313</span>
 <span id="314">314</span>
 <span id="315">315</span>
+<span id="316">316</span>
+<span id="317">317</span>
+<span id="318">318</span>
+<span id="319">319</span>
+<span id="320">320</span>
+<span id="321">321</span>
+<span id="322">322</span>
+<span id="323">323</span>
+<span id="324">324</span>
+<span id="325">325</span>
+<span id="326">326</span>
+<span id="327">327</span>
+<span id="328">328</span>
+<span id="329">329</span>
+<span id="330">330</span>
+<span id="331">331</span>
+<span id="332">332</span>
+<span id="333">333</span>
+<span id="334">334</span>
+<span id="335">335</span>
+<span id="336">336</span>
+<span id="337">337</span>
+<span id="338">338</span>
+<span id="339">339</span>
+<span id="340">340</span>
+<span id="341">341</span>
+<span id="342">342</span>
+<span id="343">343</span>
+<span id="344">344</span>
 </pre><pre class="rust">
+<span class="doccomment">//![![ci-tests](https://github.com/arindas/bheap/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/bheap/actions/workflows/ci-tests.yml)</span>
+<span class="doccomment">//![![rustdoc](https://github.com/arindas/bheap/actions/workflows/rustdoc.yml/badge.svg)](https://github.com/arindas/bheap/actions/workflows/rustdoc.yml)</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!A generic binary max heap implementation for implementing a dynamically prioritizable priority queue.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!This implementation uses a vector as the underlying data-structure. Hence, there is no oppurtunity</span>
+<span class="doccomment">//!for fine grained locking. Users of this crate are request to wrap `bheap::BinaryMaxHeap` with the</span>
+<span class="doccomment">//!required concurrency primitive for use in multithreaded contexts.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!## Why is this necessary?</span>
+<span class="doccomment">//!The binary heap implementation provided by the standard library (`use std::collections::binary_heap::BinaryHeap;`),</span>
+<span class="doccomment">//!assumes that the ordering of the elements in the domain is fixed. I needed a binary heap implementation which allowed</span>
+<span class="doccomment">//!for change in ordering of elements at runtime.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!## How does it work?</span>
+<span class="doccomment">//!`bheap::BinaryMaxHeap` enforces the `Ord + bheap::Uid` trait bounds on the element type. The `Uid` trait, simply</span>
+<span class="doccomment">//!presents a method for returing a unique `u64` uid for the type.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!The struct maintains a `Vec&lt;T&gt;` as the underlying storage buffer and a `HashMap&lt;u64, usize&gt;` for maintaining a</span>
+<span class="doccomment">//!mapping from `T::uid()` to position in vector. This map is updated on every heap operation to remain consistent.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!When the ordering of an element changes, its position in the heap can be looked up in the heap using the</span>
+<span class="doccomment">//!hashmap. Then, we `heapify_up()` or `heapify_down()` as required to restore heap property.</span>
+<span class="doccomment">//!</span>
+<span class="doccomment">//!## Limitations</span>
+<span class="doccomment">//!Since, we use `u64` for uniquely identitfying elements, this heap can only scale up `2^64 = 18446744073709551616` elements.</span>
+<span class="doccomment">//!This was more than enough for my purposes.</span>
+
+
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp::Ordering</span>, <span class="ident">collections::HashMap</span>};
 
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Uid</span> {
