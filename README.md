@@ -1,4 +1,6 @@
 # bheap
+[![ci-tests](https://github.com/arindas/bheap/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/bheap/actions/workflows/ci-tests.yml)
+[![rustdoc](https://github.com/arindas/bheap/actions/workflows/rustdoc.yml/badge.svg)](https://github.com/arindas/bheap/actions/workflows/rustdoc.yml)
 
 A generic binary max heap implementation for implementing a dynamically prioritizable priority queue.
 
@@ -26,3 +28,7 @@ Since, we use `u64` for uniquely identitfying elements, this heap can only scale
 This was more than enough for my purposes.
 
 Another interesting property of this library is that it has no third party dependencies other than the standard libary.
+
+# License
+
+`bheap` is licensed under the MIT License. See [LICENSE](./LICENSE) for the full license text.
