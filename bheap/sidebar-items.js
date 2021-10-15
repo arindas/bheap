@@ -1,1 +1,1 @@
-initSidebarItems({"struct":[["BinaryMaxHeap",""]],"trait":[["Uid",""]]});
+initSidebarItems({"struct":[["BinaryMaxHeap","A re-prioritizable binary max heap containing a buffer for storing elements and a hashmap index for keeping track of element positions."]],"trait":[["Uid","Trait to uniquely identify elements in bheap."]]});

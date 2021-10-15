@@ -342,6 +342,90 @@
 <span id="342">342</span>
 <span id="343">343</span>
 <span id="344">344</span>
+<span id="345">345</span>
+<span id="346">346</span>
+<span id="347">347</span>
+<span id="348">348</span>
+<span id="349">349</span>
+<span id="350">350</span>
+<span id="351">351</span>
+<span id="352">352</span>
+<span id="353">353</span>
+<span id="354">354</span>
+<span id="355">355</span>
+<span id="356">356</span>
+<span id="357">357</span>
+<span id="358">358</span>
+<span id="359">359</span>
+<span id="360">360</span>
+<span id="361">361</span>
+<span id="362">362</span>
+<span id="363">363</span>
+<span id="364">364</span>
+<span id="365">365</span>
+<span id="366">366</span>
+<span id="367">367</span>
+<span id="368">368</span>
+<span id="369">369</span>
+<span id="370">370</span>
+<span id="371">371</span>
+<span id="372">372</span>
+<span id="373">373</span>
+<span id="374">374</span>
+<span id="375">375</span>
+<span id="376">376</span>
+<span id="377">377</span>
+<span id="378">378</span>
+<span id="379">379</span>
+<span id="380">380</span>
+<span id="381">381</span>
+<span id="382">382</span>
+<span id="383">383</span>
+<span id="384">384</span>
+<span id="385">385</span>
+<span id="386">386</span>
+<span id="387">387</span>
+<span id="388">388</span>
+<span id="389">389</span>
+<span id="390">390</span>
+<span id="391">391</span>
+<span id="392">392</span>
+<span id="393">393</span>
+<span id="394">394</span>
+<span id="395">395</span>
+<span id="396">396</span>
+<span id="397">397</span>
+<span id="398">398</span>
+<span id="399">399</span>
+<span id="400">400</span>
+<span id="401">401</span>
+<span id="402">402</span>
+<span id="403">403</span>
+<span id="404">404</span>
+<span id="405">405</span>
+<span id="406">406</span>
+<span id="407">407</span>
+<span id="408">408</span>
+<span id="409">409</span>
+<span id="410">410</span>
+<span id="411">411</span>
+<span id="412">412</span>
+<span id="413">413</span>
+<span id="414">414</span>
+<span id="415">415</span>
+<span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
+<span id="428">428</span>
 </pre><pre class="rust">
 <span class="doccomment">//![![ci-tests](https://github.com/arindas/bheap/actions/workflows/ci-tests.yml/badge.svg)](https://github.com/arindas/bheap/actions/workflows/ci-tests.yml)</span>
 <span class="doccomment">//![![rustdoc](https://github.com/arindas/bheap/actions/workflows/rustdoc.yml/badge.svg)](https://github.com/arindas/bheap/actions/workflows/rustdoc.yml)</span>
@@ -371,18 +455,25 @@
 <span class="doccomment">//!Since, we use `u64` for uniquely identitfying elements, this heap can only scale up `2^64 = 18446744073709551616` elements.</span>
 <span class="doccomment">//!This was more than enough for my purposes.</span>
 
-
 <span class="kw">use</span> <span class="ident">std</span>::{<span class="ident">cmp::Ordering</span>, <span class="ident">collections::HashMap</span>};
 
+<span class="doccomment">/// Trait to uniquely identify elements in bheap.</span>
 <span class="kw">pub</span> <span class="kw">trait</span> <span class="ident">Uid</span> {
+    <span class="doccomment">/// Unique identifier for the implementing struct. The same value must</span>
+    <span class="doccomment">/// be returned in all invocations of this method on a given struct.</span>
     <span class="kw">fn</span> <span class="ident">uid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span>;
 }
 
+<span class="doccomment">/// A re-prioritizable binary max heap containing a buffer for storing elements</span>
+<span class="doccomment">/// and a hashmap index for keeping track of element positions.</span>
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">BinaryMaxHeap</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Uid</span>,
 {
+    <span class="doccomment">/// in-memory storage for elements</span>
     <span class="ident">buffer</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>,
+
+    <span class="doccomment">/// mapping from element uids to positions in the heap buffer</span>
     <span class="ident">index</span>: <span class="ident">HashMap</span><span class="op">&lt;</span><span class="ident">u64</span>, <span class="ident">usize</span><span class="op">&gt;</span>,
 }
 
@@ -390,6 +481,9 @@
 <span class="kw">where</span>
     <span class="ident">T</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Uid</span>,
 {
+    <span class="doccomment">/// Creates a new vector from a given vector, which may or may not be</span>
+    <span class="doccomment">/// empty. If the vector already contains elements, the elements are</span>
+    <span class="doccomment">/// re-arranged with a `build_heap()` operation.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_vec</span>(<span class="ident">buffer</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">bheap</span> <span class="op">=</span> <span class="ident">BinaryMaxHeap</span> {
             <span class="ident">buffer</span>,
@@ -403,6 +497,7 @@
         <span class="ident">bheap</span>
     }
 
+    <span class="doccomment">/// Creates an empty binary max heap with no elements.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>() <span class="op">-</span><span class="op">&gt;</span> <span class="self">Self</span> {
         <span class="ident">BinaryMaxHeap::from_vec</span>(<span class="macro">vec!</span>[])
     }
@@ -417,6 +512,9 @@
         <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>()
     }
 
+    <span class="doccomment">/// Swaps elements at the given indices byt first swapping the elements</span>
+    <span class="doccomment">/// in the buffer vector and next updating the `HashMap` index with</span>
+    <span class="doccomment">/// new indices.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">swap_elems_at_indices</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) {
         <span class="kw">let</span> <span class="ident">index</span> <span class="op">=</span> <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">index</span>;
@@ -427,11 +525,26 @@
         <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">swap</span>(<span class="ident">i</span>, <span class="ident">j</span>);
     }
 
+    <span class="doccomment">/// Convenience method for comparing elements at the given indices.</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>, <span class="ident">j</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">Ordering</span> {
         <span class="self">self</span>.<span class="ident">buffer</span>[<span class="ident">i</span>].<span class="ident">cmp</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">buffer</span>[<span class="ident">j</span>])
     }
 
+    <span class="doccomment">/// Restores heap property by moving the element in the given index</span>
+    <span class="doccomment">/// upwards along it&#39;s parents to the root, until it has no parents</span>
+    <span class="doccomment">/// or it is &lt;= to its parents.</span>
+    <span class="doccomment">/// It operates in the following manner:</span>
+    <span class="doccomment">/// ```text</span>
+    <span class="doccomment">/// heapify_up(heap, i) {</span>
+    <span class="doccomment">///     while i &gt; 0 {</span>
+    <span class="doccomment">///         let parent = (i - 1) / 2;</span>
+    <span class="doccomment">///         if heap[i] &gt; heap[parent] {</span>
+    <span class="doccomment">///             swap(heap, i, parent)</span>
+    <span class="doccomment">///         } else { break; }</span>
+    <span class="doccomment">///     }</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">heapify_up</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">idx</span>;
 
@@ -453,6 +566,24 @@
         }
     }
 
+    <span class="doccomment">/// Restores heap property by moving the element at the given index,</span>
+    <span class="doccomment">/// downwards along it&#39;s children, towards the leaves, until it</span>
+    <span class="doccomment">/// has no children or it is &gt;= to its children.</span>
+    <span class="doccomment">/// It operates in the following manner:</span>
+    <span class="doccomment">/// ```text</span>
+    <span class="doccomment">/// heapify_dn(heap, i) {</span>
+    <span class="doccomment">///     while i &lt; len(heap) / 2 {</span>
+    <span class="doccomment">///         let max = i;</span>
+    <span class="doccomment">///         let lc, rc = 2 * i + 1, 2 * i + 2;</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///         if lc &lt; len(heap) &amp;&amp; heap[max] &lt; lc { max = lc; }</span>
+    <span class="doccomment">///         if rc &lt; len(heao) &amp;&amp; heap[max] &lt; rc { max = rc; }</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///         if i != max { swap(heap, i, max); i = max; }</span>
+    <span class="doccomment">///         else { break; }</span>
+    <span class="doccomment">///     }</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ```</span>
     <span class="kw">fn</span> <span class="ident">heapify_dn</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="ident">idx</span>;
 
@@ -487,6 +618,13 @@
         }
     }
 
+    <span class="doccomment">/// Corrects the `HashMap` index for the given heap position,</span>
+    <span class="doccomment">/// by updating the entry with the uid of the element at that</span>
+    <span class="doccomment">/// position. The values stored is the index.</span>
+    <span class="doccomment">/// Concisely:</span>
+    <span class="doccomment">/// ```text</span>
+    <span class="doccomment">/// index[buffer[i].uid()] = i</span>
+    <span class="doccomment">/// ```</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">update_index</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>() {
@@ -496,6 +634,20 @@
         <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">insert</span>(<span class="self">self</span>.<span class="ident">buffer</span>[<span class="ident">i</span>].<span class="ident">uid</span>(), <span class="ident">i</span>)
     }
 
+    <span class="doccomment">/// Returns a mutable reference to the element at the givven</span>
+    <span class="doccomment">/// heap position, if present. This implementation assumes</span>
+    <span class="doccomment">/// that no mutation used with respect to the returned</span>
+    <span class="doccomment">/// mutable reference, modifies the uid() property for the</span>
+    <span class="doccomment">/// element.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">i</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">T</span><span class="op">&gt;</span> {
+        <span class="kw">if</span> <span class="ident">i</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>() {
+            <span class="kw">return</span> <span class="prelude-val">None</span>;
+        }
+
+        <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>.<span class="ident">buffer</span>[<span class="ident">i</span>])
+    }
+
+    <span class="doccomment">/// Pushes a new element in this priority queue.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">push</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">elem</span>: <span class="ident">T</span>) {
         <span class="kw">let</span> <span class="ident">idx</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">len</span>();
 
@@ -505,6 +657,7 @@
         <span class="self">self</span>.<span class="ident">heapify_up</span>(<span class="ident">idx</span>);
     }
 
+    <span class="doccomment">/// Peeks at the element with highest priority, if present.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">peek</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_empty</span>() {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -513,6 +666,7 @@
         <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">buffer</span>[<span class="number">0</span>])
     }
 
+    <span class="doccomment">/// Pops the element with the highest property, if present.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">pop</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_empty</span>() {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -521,17 +675,30 @@
         <span class="kw">let</span> <span class="ident">elem</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">buffer</span>.<span class="ident">swap_remove</span>(<span class="number">0</span>);
         <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">remove</span>(<span class="kw-2">&amp;</span><span class="ident">elem</span>.<span class="ident">uid</span>());
 
-        <span class="self">self</span>.<span class="ident">update_index</span>(<span class="number">0</span>).<span class="ident">and</span>(<span class="self">self</span>.<span class="ident">heapify_dn</span>(<span class="number">0</span>));
+        <span class="self">self</span>.<span class="ident">update_index</span>(<span class="number">0</span>);
+        <span class="self">self</span>.<span class="ident">heapify_dn</span>(<span class="number">0</span>);
 
         <span class="prelude-val">Some</span>(<span class="ident">elem</span>)
     }
 
+    <span class="doccomment">/// Builds the `HashMap` index from uids to buffer positions.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_index</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="kw">for</span> <span class="ident">i</span> <span class="kw">in</span> <span class="number">0</span>..<span class="self">self</span>.<span class="ident">len</span>() {
             <span class="self">self</span>.<span class="ident">update_index</span>(<span class="ident">i</span>);
         }
     }
 
+    <span class="doccomment">/// Builds a heap from un-organized elements in the in-memory buffer.</span>
+    <span class="doccomment">/// It operates as follows:</span>
+    <span class="doccomment">/// ```text</span>
+    <span class="doccomment">/// build_heap(heap) {</span>
+    <span class="doccomment">///     build_index(heap);</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">///     for i = len(heap) / 2; i &gt;= 0; i-- {</span>
+    <span class="doccomment">///         heapify_dn(heap, i);</span>
+    <span class="doccomment">///     }</span>
+    <span class="doccomment">/// }</span>
+    <span class="doccomment">/// ````</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">build_heap</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>) {
         <span class="self">self</span>.<span class="ident">build_index</span>();
 
@@ -540,6 +707,7 @@
         }
     }
 
+    <span class="doccomment">/// Restores heap property at the given position.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">restore_heap_property</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">idx</span>: <span class="ident">usize</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="kw">if</span> <span class="ident">idx</span> <span class="op">&gt;</span><span class="op">=</span> <span class="self">self</span>.<span class="ident">len</span>() {
             <span class="kw">return</span> <span class="prelude-val">None</span>;
@@ -548,33 +716,14 @@
         <span class="self">self</span>.<span class="ident">heapify_up</span>(<span class="ident">idx</span>).<span class="ident">or</span>(<span class="self">self</span>.<span class="ident">heapify_dn</span>(<span class="ident">idx</span>))
     }
 
+    <span class="doccomment">/// Returns the position for element with given uid in the heap buffer.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">index_in_heap_from_uid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">uid</span>: <span class="ident">u64</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">uid</span>).<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">elem_idx</span><span class="op">|</span> <span class="ident">elem_idx</span>)
     }
 
+    <span class="doccomment">/// Returns the position for element in the heap buffer.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">index_in_heap</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">elem</span>: <span class="kw-2">&amp;</span><span class="ident">T</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">index</span>.<span class="ident">get</span>(<span class="kw-2">&amp;</span><span class="ident">elem</span>.<span class="ident">uid</span>()).<span class="ident">map</span>(<span class="op">|</span><span class="kw-2">&amp;</span><span class="ident">elem_idx</span><span class="op">|</span> <span class="ident">elem_idx</span>)
-    }
-}
-
-<span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">BinaryMaxHeap</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
-<span class="kw">where</span>
-    <span class="ident">T</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Uid</span>,
-{
-    <span class="kw">pub</span>(<span class="kw">crate</span>) <span class="kw">fn</span> <span class="ident">_index_consistent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="bool-val">true</span>;
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
-
-        <span class="kw">for</span> <span class="ident">elem</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">buffer</span> {
-            <span class="kw">let</span> <span class="ident">elem_consistent</span> <span class="op">=</span> <span class="self">self</span>
-                .<span class="ident">index_in_heap</span>(<span class="ident">elem</span>)
-                .<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">elem_idx</span><span class="op">|</span> <span class="ident">elem_idx</span> <span class="op">=</span><span class="op">=</span> <span class="ident">i</span>);
-
-            <span class="ident">result</span> <span class="op">=</span> <span class="ident">result</span> <span class="op">&amp;&amp;</span> <span class="ident">elem_consistent</span>;
-            <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>
-        }
-
-        <span class="ident">result</span>
     }
 }
 
@@ -585,6 +734,25 @@
     <span class="kw">impl</span> <span class="ident">Uid</span> <span class="kw">for</span> <span class="ident">u32</span> {
         <span class="kw">fn</span> <span class="ident">uid</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">u64</span> {
             (<span class="kw-2">*</span><span class="self">self</span>).<span class="ident">into</span>()
+        }
+    }
+
+    <span class="kw">impl</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span> <span class="ident">BinaryMaxHeap</span><span class="op">&lt;</span><span class="ident">T</span><span class="op">&gt;</span>
+    <span class="kw">where</span>
+        <span class="ident">T</span>: <span class="ident">Ord</span> <span class="op">+</span> <span class="ident">Uid</span>,
+    {
+        <span class="kw">fn</span> <span class="ident">index_consistent</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-</span><span class="op">&gt;</span> <span class="ident">bool</span> {
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">result</span> <span class="op">=</span> <span class="bool-val">true</span>;
+            <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">i</span> <span class="op">=</span> <span class="number">0</span>;
+
+            <span class="kw">for</span> <span class="ident">elem</span> <span class="kw">in</span> <span class="kw-2">&amp;</span><span class="self">self</span>.<span class="ident">buffer</span> {
+                <span class="kw">let</span> <span class="ident">elem_consistent</span> <span class="op">=</span> <span class="self">self</span>.<span class="ident">index_in_heap</span>(<span class="ident">elem</span>).<span class="ident">map_or</span>(<span class="bool-val">false</span>, <span class="op">|</span><span class="ident">idx</span><span class="op">|</span> <span class="ident">idx</span> <span class="op">=</span><span class="op">=</span> <span class="ident">i</span>);
+
+                <span class="ident">result</span> <span class="op">=</span> <span class="ident">result</span> <span class="op">&amp;&amp;</span> <span class="ident">elem_consistent</span>;
+                <span class="ident">i</span> <span class="op">+</span><span class="op">=</span> <span class="number">1</span>
+            }
+
+            <span class="ident">result</span>
         }
     }
 
@@ -636,55 +804,55 @@
 
         <span class="ident">heap</span>.<span class="ident">push</span>(<span class="number">1</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="ident">heap</span>.<span class="ident">push</span>(<span class="number">7</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="ident">heap</span>.<span class="ident">push</span>(<span class="number">2</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="ident">heap</span>.<span class="ident">push</span>(<span class="number">5</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="ident">heap</span>.<span class="ident">push</span>(<span class="number">10</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">10</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="ident">heap</span>.<span class="ident">push</span>(<span class="number">9</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">10</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">10</span>));
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">Some</span>(<span class="number">10</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">9</span>));
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">Some</span>(<span class="number">9</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">7</span>));
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">Some</span>(<span class="number">7</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">5</span>));
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">Some</span>(<span class="number">5</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">2</span>));
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">Some</span>(<span class="number">2</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="number">1</span>));
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">Some</span>(<span class="number">1</span>));
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
 
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">peek</span>(), <span class="prelude-val">None</span>);
         <span class="macro">assert_eq!</span>(<span class="ident">heap</span>.<span class="ident">pop</span>(), <span class="prelude-val">None</span>);
-        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">_index_consistent</span>());
+        <span class="macro">assert!</span>(<span class="ident">heap</span>.<span class="ident">index_consistent</span>());
     }
 }
 </pre></div>
