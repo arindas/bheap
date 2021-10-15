@@ -34,7 +34,7 @@ It operates in the following manner:</p>
         let lc, rc = 2 * i + 1, 2 * i + 2;
 
         if lc &lt; len(heap) &amp;&amp; heap[max] &lt; lc { max = lc; }
-        if rc &lt; len(heao) &amp;&amp; heap[max] &lt; rc { max = rc; }
+        if rc &lt; len(heap) &amp;&amp; heap[max] &lt; rc { max = rc; }
 
         if i != max { swap(heap, i, max); i = max; }
         else { break; }
