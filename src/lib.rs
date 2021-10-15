@@ -148,7 +148,7 @@ where
     ///         let lc, rc = 2 * i + 1, 2 * i + 2;
     ///
     ///         if lc < len(heap) && heap[max] < lc { max = lc; }
-    ///         if rc < len(heao) && heap[max] < rc { max = rc; }
+    ///         if rc < len(heap) && heap[max] < rc { max = rc; }
     ///
     ///         if i != max { swap(heap, i, max); i = max; }
     ///         else { break; }
