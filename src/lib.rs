@@ -52,7 +52,7 @@ impl<T> BinaryMaxHeap<T>
 where
     T: Ord + Uid,
 {
-    /// Creates a new vector from a given vector, which may or may not be
+    /// Creates a new BinaryMaxHeap from a given vector, which may or may not be
     /// empty. If the vector already contains elements, the elements are
     /// re-arranged with a `build_heap()` operation.
     pub fn from_vec(buffer: Vec<T>) -> Self {
